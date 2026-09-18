@@ -117,39 +117,6 @@ Nmidb  | SFA  | MUFA | PUFA
 
 Use `--save-all` to additionally save water, fat, UFA, frequency, phase-related outputs, and other derived maps.
 
-## Preprocessing
-
-For each voxel, the complex multi-echo input is constructed as
-
-```text
-magnitude_normalized(e) = magnitude(e) / magnitude(echo 1)
-
-x(e) = [
-    magnitude_normalized(e) * cos(phase(e)),
-    magnitude_normalized(e) * sin(phase(e))
-]
-```
-
-The anchor input is
-
-```text
-anchor = log(magnitude(echo 1))
-```
-
-The default inference mask follows the preprocessing used for model development:
-
-```text
-magnitude(echo 1) > 50
-```
-
-and
-
-```text
-magnitude(echo 2) > 0.08 × magnitude(echo 1)
-```
-
-These values can be changed with `--m0-threshold`, `--mask-echo-idx`, and `--mask-rel-to-m0`.
-
 ## FAC conversion
 
 The model predicts nine normalized parameters. After output scaling, FAC is calculated from `Ndb` and `Nmidb` as
