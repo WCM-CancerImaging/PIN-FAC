@@ -1,16 +1,16 @@
-# FAC-Net Inference
+# PIN-FAC Inference
 
-Inference-only release for voxel-wise breast adipose fatty acid composition (FAC) mapping from complex multi-echo MRI.
+Inference-only release of PIN-FAC (Physics-constrained Inference Network for Fatty Acid Composition) for voxel-wise breast adipose fatty acid composition (FAC) mapping from complex multi-echo MRI.
 
 This repository does **not** include training code. A pretrained model checkpoint is applied directly to a single spatial slice represented by separate magnitude and phase DICOM folders.
 
 ## Repository structure
 
 ```text
-FAC-Net-Inference/
+PIN-FAC-Inference/
 ├── infer.py
-├── micc_model.py
-├── facnet/
+├── pin_fac_model.py
+├── pinfac/
 │   ├── __init__.py
 │   ├── preprocess.py
 │   ├── model_loader.py
@@ -117,6 +117,39 @@ Nmidb  | SFA  | MUFA | PUFA
 
 Use `--save-all` to additionally save water, fat, UFA, frequency, phase-related outputs, and other derived maps.
 
+## Preprocessing
+
+For each voxel, the complex multi-echo input is constructed as
+
+```text
+magnitude_normalized(e) = magnitude(e) / magnitude(echo 1)
+
+x(e) = [
+    magnitude_normalized(e) * cos(phase(e)),
+    magnitude_normalized(e) * sin(phase(e))
+]
+```
+
+The anchor input is
+
+```text
+anchor = log(magnitude(echo 1))
+```
+
+The default inference mask follows the preprocessing used for model development:
+
+```text
+magnitude(echo 1) > 50
+```
+
+and
+
+```text
+magnitude(echo 2) > 0.08 × magnitude(echo 1)
+```
+
+These values can be changed with `--m0-threshold`, `--mask-echo-idx`, and `--mask-rel-to-m0`.
+
 ## FAC conversion
 
 The model predicts nine normalized parameters. After output scaling, FAC is calculated from `Ndb` and `Nmidb` as
@@ -128,7 +161,7 @@ SFA  = 1 - UFA
 MUFA = UFA - PUFA
 ```
 
-The output scaling constants in `facnet/postprocess.py` are the same values used during model training.
+The output scaling constants in `pinfac/postprocess.py` are the same values used during model training.
 
 ## Important input assumptions
 

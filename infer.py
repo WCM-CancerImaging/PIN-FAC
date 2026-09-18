@@ -7,10 +7,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from facnet.model_loader import load_model
-from facnet.postprocess import masked, scale_model_outputs
-from facnet.preprocess import prepare_single_slice
-from facnet.visualize import save_preview
+from pinfac.model_loader import load_model
+from pinfac.postprocess import masked, scale_model_outputs
+from pinfac.preprocess import prepare_single_slice
+from pinfac.visualize import save_preview
 
 
 DEFAULT_SAVE_KEYS = ["FF", "SFA", "MUFA", "PUFA", "R2", "ndbb", "nmidbb"]
@@ -67,7 +67,7 @@ def infer_voxels(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "FAC-Net inference for one multi-echo slice stored as "
+            "PIN-FAC inference for one multi-echo slice stored as "
             "Image/*.dcm and Phase/*.dcm."
         )
     )
